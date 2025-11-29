@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}DeepGuard AI{% endblock %}</title>
+    
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Bootstrap Icons -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.1/font/bootstrap-icons.min.css" rel="stylesheet">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --dark-blue: #001428;
+            --light-blue: #4da3ff;
+            --success-color: #10b981;
+            --warning-color: #f59e0b;
+            --danger-color: #ef4444;
+        }
+        
+        * {
+            font-family: 'Inter', sans-serif;
+        }
+        
+        html {
+            scroll-behavior: smooth;
+        }
+        
+        body {
+            background: #f5f7fa;
+            min-height: 100vh;
+            margin: 0;
+            padding: 0;
+        }
+        
+        /* Custom Navbar - Transparent on Hero */
+        .custom-navbar {
+            background: transparent;
+            backdrop-filter: none;
+            padding: 1rem 0;
+            box-shadow: none;
+            border-bottom: 1px solid rgba(77, 163, 255, 0.15);
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            transition: all 0.3s ease;
+        }
+        
+        .custom-navbar.scrolled {
+            position: fixed;
+            background: rgba(0, 20, 40, 0.95);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
+            border-bottom: 1px solid rgba(77, 163, 255, 0.2);
+        }
+
+        .custom-navbar .navbar-brand {
+            font-weight: 700;
+            font-size: 1.6rem;
+            color: #fff !important;
+            transition: all 0.3s ease;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+        
+        .custom-navbar .navbar-brand strong {
+            color: var(--light-blue);
+        }
+
+        .custom-navbar .navbar-brand:hover {
+            transform: scale(1.05);
+        }
+        
+        .custom-navbar .navbar-brand .bi {
+            color: var(--light-blue);
+        }
+
+        .custom-navbar .nav-link {
+            color: rgba(255, 255, 255, 0.95) !important;
+            font-weight: 500;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            padding: 8px 16px;
+            border-radius: 6px;
+            text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+        }
+
+        .custom-navbar .nav-link:hover {
+            color: #fff !important;
+            background: rgba(77, 163, 255, 0.2);
+        }
+
+        .custom-navbar .device-info {
+            background: rgba(77, 163, 255, 0.25);
+            padding: 8px 16px;
+            border-radius: 30px;
+            font-weight: 600;
+            color: #fff !important;
+            border: 1px solid rgba(77, 163, 255, 0.4);
+        }
+        
+        .custom-navbar .device-info strong {
+            color: var(--light-blue);
+        }
+        
+        .custom-navbar .navbar-toggler {
+            border-color: rgba(255, 255, 255, 0.5);
+        }
+        
+        .custom-navbar .navbar-toggler-icon {
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba%28255, 255, 255, 0.95%29' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
+        }
+        
+        /* Buttons */
+        .btn-gradient {
+            background: linear-gradient(135deg, var(--light-blue) 0%, #3d8fe0 100%);
+            border: none;
+            color: white;
+            padding: 12px 30px;
+            font-weight: 600;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-gradient:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(77, 163, 255, 0.4);
+            color: white;
+        }
+        
+        .btn-outline-primary {
+            border-color: var(--light-blue);
+            color: var(--light-blue);
+        }
+        
+        .btn-outline-primary:hover {
+            background: var(--light-blue);
+            border-color: var(--light-blue);
+            color: white;
+        }
+        
+        /* Cards */
+        .card {
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+            transition: transform 0.3s ease;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+        }
+        
+        /* Upload Zone */
+        .upload-zone {
+            border: 3px dashed var(--light-blue);
+            border-radius: 15px;
+            padding: 40px;
+            text-align: center;
+            background: rgba(77, 163, 255, 0.05);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .upload-zone:hover {
+            background: rgba(77, 163, 255, 0.1);
+            border-color: #3d8fe0;
+        }
+        
+        /* Footer */
+        footer {
+            background: var(--dark-blue);
+            color: rgba(255, 255, 255, 0.8);
+            padding: 30px 0;
+            margin-top: 0;
+        }
+        
+        footer .text-muted {
+            color: rgba(255, 255, 255, 0.6) !important;
+        }
+        
+        footer .text-primary {
+            color: var(--light-blue) !important;
+        }
+        
+        /* Alerts */
+        .alert {
+            border-radius: 10px;
+            border: none;
+        }
+        
+        /* Text Colors */
+        .text-primary {
+            color: var(--light-blue) !important;
+        }
+    </style>
+    
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg custom-navbar">
+        <div class="container-fluid px-4 px-lg-5">
+            <a class="navbar-brand d-flex align-items-center" href="{{ url_for('home') }}">
+                <i class="bi bi-shield-check me-2 fs-4"></i> 
+                <span>DeepGuard <strong>AI</strong></span>
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+                <ul class="navbar-nav align-items-center gap-3">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('home') }}">
+                            <i class="bi bi-house-door me-1"></i> Home
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <span class="nav-link device-info">
+                            <i class="bi bi-cpu me-1"></i> Device: <strong>{{ device|upper }}</strong>
+                        </span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Flash Messages -->
+    <div class="container-fluid px-0">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="container mt-3">
+                {% for category, message in messages %}
+                <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                    <i class="bi bi-info-circle"></i> {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+                {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+    </div>
+
+    <!-- Main Content -->
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Footer -->
+    <footer class="text-center">
+        <div class="container">
+            <p class="mb-1">
+                <i class="bi bi-shield-check text-primary"></i> 
+                <strong style="color: white;">DeepGuard AI</strong> - Advanced Deepfake Detection System
+            </p>
+            <p class="small text-muted mb-0">
+                Built with Flask & PyTorch | Final Year Project 
+            </p>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        // Navbar scroll effect
+        window.addEventListener('scroll', function() {
+            const navbar = document.querySelector('.custom-navbar');
+            if (window.scrollY > 50) {
+                navbar.classList.add('scrolled');
+            } else {
+                navbar.classList.remove('scrolled');
+            }
+        });
+    </script>
+    
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

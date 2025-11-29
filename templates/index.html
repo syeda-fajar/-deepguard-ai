@@ -1,0 +1,338 @@
+{% extends "base.html" %}
+
+{% block title %}Upload Image - DeepGuard AI{% endblock %}
+
+{% block extra_css %}
+<style>
+    .hero-section {
+        position: relative;
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        background-image: url("{{ url_for('static', filename='uploads/hero-background.jpg') }}");
+        background-position: right center;
+        background-size: cover;
+        background-repeat: no-repeat;
+        background-attachment: scroll;
+        overflow: hidden;
+        padding-top: 80px;
+    }
+    
+    /* Fallback if image doesn't load */
+    .hero-section::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(135deg, #001428 0%, #1a2332 100%);
+        z-index: -1;
+    }
+    
+    .hero-section::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: radial-gradient(circle at right, rgba(102, 126, 234, 0.2), transparent 70%);
+        z-index: 1;
+    }
+    
+    .hero-content {
+        position: relative;
+        z-index: 2;
+        color: white;
+        padding: 80px 0;
+    }
+    
+    .hero-tag {
+        font-size: 0.9rem;
+        font-weight: 600;
+        color: #4da3ff;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        margin-bottom: 1.5rem;
+        display: inline-block;
+    }
+    
+    .hero-title {
+        font-size: 3.5rem;
+        font-weight: 700;
+        line-height: 1.2;
+        margin-bottom: 1.5rem;
+    }
+    
+    .hero-title .highlight {
+        color: #4da3ff;
+    }
+    
+    .hero-subtitle {
+        font-size: 1.3rem;
+        color: rgba(255, 255, 255, 0.9);
+        margin-bottom: 2.5rem;
+        max-width: 600px;
+        line-height: 1.6;
+    }
+    
+    .hero-subtitle .highlight-text {
+        color: #4da3ff;
+        font-weight: 600;
+    }
+    
+    .btn-hero {
+        background: #4da3ff;
+        border: none;
+        color: white;
+        padding: 15px 35px;
+        font-weight: 600;
+        border-radius: 8px;
+        transition: all 0.3s ease;
+        font-size: 1.1rem;
+    }
+    
+    .btn-hero:hover {
+        background: #3d8fe0;
+        transform: translateY(-2px);
+        box-shadow: 0 10px 25px rgba(77, 163, 255, 0.3);
+        color: white;
+    }
+    
+    .btn-hero-outline {
+        background: transparent;
+        border: 2px solid white;
+        color: white;
+        padding: 13px 35px;
+        font-weight: 600;
+        border-radius: 8px;
+        transition: all 0.3s ease;
+        font-size: 1.1rem;
+        margin-left: 15px;
+    }
+    
+    .btn-hero-outline:hover {
+        background: white;
+        color: #001428;
+        transform: translateY(-2px);
+    }
+    
+    @media (max-width: 768px) {
+        .hero-title {
+            font-size: 2.5rem;
+        }
+        .hero-subtitle {
+            font-size: 1.1rem;
+        }
+        .btn-hero-outline {
+            margin-left: 0;
+            margin-top: 10px;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Hero Section with Background Image -->
+<section class="hero-section" style="background-image: url({{ url_for('static', filename='uploads/hero-background.jpg') }}); background-position:right center;">
+    <!-- Dark overlay on left side only -->
+    <div style="position: absolute; top: 0; left: 0; right: 50%; bottom: 0; background: linear-gradient(to right, rgba(0, 20, 40, 0.95), rgba(0, 20, 40, 0.7)); z-index: 1;"></div>
+    
+    <div class="container" style="position: relative; z-index: 2;">
+        <div class="row">
+            <div class="col-lg-6 col-xl-5">
+                <div class="hero-content">
+                    <div class="hero-tag">
+                        Advanced Deepfake Detection Software
+                    </div>
+                    
+                    <h1 class="hero-title">
+                        Deepfakes <span class="highlight">aren't real</span>, but they are a <span class="highlight">reality</span>.
+                    </h1>
+                    
+                    <p class="hero-subtitle">
+                        Protect yourself from media misinformation with our integrable & standalone 
+                        <span class="highlight-text">deepfake detection solutions</span>.
+                    </p>
+                    
+                    <div class="d-flex flex-wrap">
+                        <a href="#uploadSection" class="btn btn-hero">
+                            Try Now <i class="bi bi-arrow-right ms-2"></i>
+                        </a>
+                        <a href="#features" class="btn btn-hero-outline">
+                            Learn More
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Upload Section -->
+<section id="uploadSection" class="py-5 my-5" style="background: white;">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="text-center mb-5">
+                    <h2 class="fw-bold mb-3" style="color: #2c3e50;">Upload Image for Analysis</h2>
+                    <p class="text-muted">Drag and drop your image or click to browse</p>
+                </div>
+                
+                <div class="card border-0 shadow-lg">
+                    <div class="card-body p-5">
+                        <form method="POST" action="{{ url_for('predict') }}" enctype="multipart/form-data" id="uploadForm">
+                            <div class="upload-zone mb-4" id="uploadZone">
+                                <i class="bi bi-cloud-arrow-up display-1 text-primary mb-3"></i>
+                                <h5 class="mb-2">Drag & Drop your image here</h5>
+                                <p class="text-muted mb-3">or click the button below</p>
+                                <input type="file" name="file" id="fileInput" accept=".jpg,.jpeg,.png" required hidden>
+                                <button type="button" class="btn btn-gradient px-4 py-2" onclick="document.getElementById('fileInput').click()">
+                                    <i class="bi bi-folder2-open"></i> Choose File
+                                </button>
+                                <p class="small text-muted mt-3 mb-0">Supported formats: JPG, JPEG, PNG (Max 16MB)</p>
+                            </div>
+                            
+                            <div id="previewContainer" class="text-center mb-4" style="display: none;">
+                                <div class="position-relative d-inline-block">
+                                    <img id="imagePreview" class="img-fluid rounded shadow" style="max-height: 350px;">
+                                    <button type="button" class="btn btn-sm btn-danger position-absolute top-0 end-0 m-2" 
+                                            onclick="clearPreview()" title="Remove image">
+                                        <i class="bi bi-x-lg"></i>
+                                    </button>
+                                </div>
+                                <p class="mt-3 text-muted fw-bold" id="fileName"></p>
+                            </div>
+                            
+                            <div class="text-center">
+                                <button type="submit" class="btn btn-gradient btn-lg px-5 py-3" id="submitBtn" disabled>
+                                    <i class="bi bi-search"></i> Analyze Image
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Features Section -->
+<section id="features" class="py-5 my-5" style="background: #f8f9fa;">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h2 class="fw-bold mb-3" style="color: #2c3e50;">Why Choose DeepGuard AI?</h2>
+            <p class="text-muted">Cutting-edge technology for deepfake detection</p>
+        </div>
+        
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="card text-center h-100 border-0 shadow-sm">
+                    <div class="card-body p-4">
+                        <div class="mb-3">
+                            <i class="bi bi-lightning-charge-fill text-warning display-3"></i>
+                        </div>
+                        <h5 class="fw-bold mb-3">Fast Detection</h5>
+                        <p class="text-muted mb-0">Get instant results with our optimized deep learning model powered by EfficientNetB0</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card text-center h-100 border-0 shadow-sm">
+                    <div class="card-body p-4">
+                        <div class="mb-3">
+                            <i class="bi bi-eye-fill text-primary display-3"></i>
+                        </div>
+                        <h5 class="fw-bold mb-3">Explainable AI</h5>
+                        <p class="text-muted mb-0">Visualize exactly what the AI focuses on using Grad-CAM heatmap technology</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card text-center h-100 border-0 shadow-sm">
+                    <div class="card-body p-4">
+                        <div class="mb-3">
+                            <i class="bi bi-shield-check text-success display-3"></i>
+                        </div>
+                        <h5 class="fw-bold mb-3">High Accuracy</h5>
+                        <p class="text-muted mb-0">Trained on thousands of real and fake images for reliable detection</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+const fileInput = document.getElementById('fileInput');
+const uploadZone = document.getElementById('uploadZone');
+const previewContainer = document.getElementById('previewContainer');
+const imagePreview = document.getElementById('imagePreview');
+const fileName = document.getElementById('fileName');
+const submitBtn = document.getElementById('submitBtn');
+
+// Clear preview function
+function clearPreview() {
+    previewContainer.style.display = 'none';
+    fileInput.value = '';
+    submitBtn.disabled = true;
+}
+
+// File input change handler
+fileInput.addEventListener('change', function(e) {
+    const file = e.target.files[0];
+    if (file) {
+        displayPreview(file);
+    }
+});
+
+// Drag and drop handlers
+uploadZone.addEventListener('dragover', function(e) {
+    e.preventDefault();
+    uploadZone.style.borderColor = '#764ba2';
+    uploadZone.style.background = 'rgba(102, 126, 234, 0.15)';
+});
+
+uploadZone.addEventListener('dragleave', function() {
+    uploadZone.style.borderColor = '#667eea';
+    uploadZone.style.background = 'rgba(102, 126, 234, 0.05)';
+});
+
+uploadZone.addEventListener('drop', function(e) {
+    e.preventDefault();
+    uploadZone.style.borderColor = '#667eea';
+    uploadZone.style.background = 'rgba(102, 126, 234, 0.05)';
+    
+    const file = e.dataTransfer.files[0];
+    if (file && (file.type === 'image/jpeg' || file.type === 'image/png' || file.type === 'image/jpg')) {
+        fileInput.files = e.dataTransfer.files;
+        displayPreview(file);
+    } else {
+        alert('Please upload a valid image file (JPG, JPEG, or PNG)');
+    }
+});
+
+function displayPreview(file) {
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        imagePreview.src = e.target.result;
+        fileName.textContent = file.name + ' (' + (file.size / 1024 / 1024).toFixed(2) + ' MB)';
+        previewContainer.style.display = 'block';
+        submitBtn.disabled = false;
+        
+        // Smooth scroll to preview
+        previewContainer.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    };
+    reader.readAsDataURL(file);
+}
+
+// Form submission with loading state
+document.getElementById('uploadForm').addEventListener('submit', function() {
+    submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Analyzing...';
+    submitBtn.disabled = true;
+});
+</script>
+{% endblock %}

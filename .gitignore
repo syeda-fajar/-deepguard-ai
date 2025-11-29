@@ -1,0 +1,33 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+ENV/
+.venv
+
+# Flask
+instance/
+.webassets-cache
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Project specific
+static/uploads/*.jpg
+static/uploads/*.jpeg
+static/uploads/*.png
+!static/uploads/hero-background.jpg
+
+# Model files (if too large)
+# saved_models/*.pth

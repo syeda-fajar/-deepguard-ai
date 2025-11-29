@@ -1,0 +1,278 @@
+{% extends "base.html" %}
+
+{% block title %}Analysis Results - DeepGuard AI{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* Add top padding to avoid navbar collision */
+    .results-container {
+        padding-top: 100px;
+    }
+    
+    .progress-bar-animated {
+        animation: progress-bar-stripes 1s linear infinite;
+    }
+    
+    .prediction-badge {
+        font-size: 2rem;
+        padding: 15px 30px;
+        border-radius: 15px;
+        font-weight: 700;
+    }
+    
+    .stat-card {
+        background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        border-radius: 10px;
+        padding: 15px;
+        margin-bottom: 10px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="results-container">
+    <div class="container">
+        <!-- Back Button -->
+        <div class="mb-4">
+            <a href="{{ url_for('home') }}" class="btn btn-outline-primary">
+                <i class="bi bi-arrow-left"></i> Analyze Another Image
+            </a>
+        </div>
+
+        <!-- Main Results Card -->
+        <div class="row">
+    <div class="col-lg-8">
+        <!-- Prediction Result -->
+        <div class="card mb-4">
+            <div class="card-body text-center p-5">
+                <h3 class="mb-4"><i class="bi bi-clipboard-data"></i> Detection Results</h3>
+                
+                {% if prediction == 'Real' %}
+                    <span class="badge bg-success prediction-badge">
+                        <i class="bi bi-check-circle"></i> REAL IMAGE
+                    </span>
+                {% else %}
+                    <span class="badge bg-danger prediction-badge">
+                        <i class="bi bi-exclamation-triangle"></i> FAKE IMAGE
+                    </span>
+                {% endif %}
+                
+                <div class="mt-4">
+                    <h5>Confidence Score</h5>
+                    <div class="progress" style="height: 30px;">
+                        <div class="progress-bar progress-bar-striped progress-bar-animated 
+                                    {% if confidence >= 90 %}bg-success
+                                    {% elif confidence >= 70 %}bg-warning
+                                    {% else %}bg-danger{% endif %}"
+                             role="progressbar" 
+                             style="width: {{ confidence }}%;">
+                            <strong>{{ confidence }}%</strong>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="mt-4">
+                    <span class="badge badge-quality bg-{{ quality_badge }} fs-6">
+                        {{ quality_label }}
+                    </span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Visualizations -->
+        <div class="card mb-4">
+            <div class="card-body">
+                <h5 class="card-title"><i class="bi bi-image"></i> Visual Analysis</h5>
+                
+                <div class="row">
+                    <div class="col-md-4 text-center mb-3">
+                        <h6 class="text-muted">Original Image</h6>
+                        <img src="{{ url_for('static', filename='uploads/' + original_image) }}" 
+                             class="img-fluid rounded shadow-sm" alt="Original">
+                    </div>
+                    <div class="col-md-4 text-center mb-3">
+                        <h6 class="text-muted">Attention Heatmap</h6>
+                        <img src="{{ url_for('static', filename='uploads/' + heatmap_image) }}" 
+                             class="img-fluid rounded shadow-sm" alt="Heatmap">
+                    </div>
+                    <div class="col-md-4 text-center mb-3">
+                        <h6 class="text-muted">Overlay Analysis</h6>
+                        <img src="{{ url_for('static', filename='uploads/' + overlay_image) }}" 
+                             class="img-fluid rounded shadow-sm" alt="Overlay">
+                    </div>
+                </div>
+                
+                <div class="alert alert-info mt-3">
+                    <i class="bi bi-info-circle"></i> 
+                    <strong>Heatmap Explanation:</strong> Red areas show where the AI model focuses most when making its decision. These highlight the regions that most influenced the fake/real classification.
+                </div>
+            </div>
+        </div>
+        
+        <!-- Probability Distribution -->
+        <div class="card mb-4">
+            <div class="card-body">
+                <h5 class="card-title"><i class="bi bi-bar-chart"></i> Class Probabilities</h5>
+                
+                <div class="mb-3">
+                    <div class="d-flex justify-content-between mb-1">
+                        <span><i class="bi bi-x-circle text-danger"></i> Fake</span>
+                        <strong>{{ fake_prob }}%</strong>
+                    </div>
+                    <div class="progress" style="height: 25px;">
+                        <div class="progress-bar bg-danger" style="width: {{ fake_prob }}%;">
+                            {{ fake_prob }}%
+                        </div>
+                    </div>
+                </div>
+                
+                <div>
+                    <div class="d-flex justify-content-between mb-1">
+                        <span><i class="bi bi-check-circle text-success"></i> Real</span>
+                        <strong>{{ real_prob }}%</strong>
+                    </div>
+                    <div class="progress" style="height: 25px;">
+                        <div class="progress-bar bg-success" style="width: {{ real_prob }}%;">
+                            {{ real_prob }}%
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Sidebar: Metrics & Analysis -->
+    <div class="col-lg-4">
+        <!-- Image Quality Metrics -->
+        <div class="card mb-4">
+            <div class="card-body">
+                <h5 class="card-title"><i class="bi bi-speedometer2"></i> Image Quality</h5>
+                
+                <div class="stat-card">
+                    <small class="text-muted">Sharpness</small>
+                    <h6 class="mb-0">{{ "%.2f"|format(quality_metrics.sharpness) }}</h6>
+                </div>
+                
+                <div class="stat-card">
+                    <small class="text-muted">Contrast</small>
+                    <h6 class="mb-0">{{ "%.2f"|format(quality_metrics.contrast) }}</h6>
+                </div>
+                
+                <div class="stat-card">
+                    <small class="text-muted">Brightness</small>
+                    <h6 class="mb-0">{{ "%.2f"|format(quality_metrics.brightness) }}</h6>
+                </div>
+                
+                <div class="stat-card">
+                    <small class="text-muted">Edge Density</small>
+                    <h6 class="mb-0">{{ "%.4f"|format(quality_metrics.edge_density) }}</h6>
+                </div>
+                
+                <div class="stat-card">
+                    <small class="text-muted">Overall Score</small>
+                    <h6 class="mb-0">{{ "%.2f"|format(quality_metrics.overall_score) }}</h6>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Artifact Detection -->
+        <div class="card mb-4">
+            <div class="card-body">
+                <h5 class="card-title"><i class="bi bi-search"></i> Artifact Analysis</h5>
+                <ul class="list-unstyled">
+                    {% for artifact in artifacts %}
+                    <li class="mb-2">{{ artifact }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+        
+        <!-- Heatmap Statistics -->
+        <div class="card mb-4">
+            <div class="card-body">
+                <h5 class="card-title"><i class="bi bi-graph-up"></i> Attention Stats</h5>
+                
+                <div class="stat-card">
+                    <small class="text-muted">Mean Activation</small>
+                    <h6 class="mb-0">{{ "%.4f"|format(heatmap_stats.mean_activation) }}</h6>
+                </div>
+                
+                <div class="stat-card">
+                    <small class="text-muted">Max Activation</small>
+                    <h6 class="mb-0">{{ "%.4f"|format(heatmap_stats.max_activation) }}</h6>
+                </div>
+                
+                <div class="stat-card">
+                    <small class="text-muted">Std Deviation</small>
+                    <h6 class="mb-0">{{ "%.4f"|format(heatmap_stats.std_activation) }}</h6>
+                </div>
+                
+                <hr>
+                
+                <h6 class="text-muted mb-3">Regional Attention</h6>
+                
+                <div class="stat-card">
+                    <small class="text-muted">Top Region</small>
+                    <h6 class="mb-0">{{ "%.4f"|format(heatmap_stats.top_region) }}</h6>
+                </div>
+                
+                <div class="stat-card">
+                    <small class="text-muted">Center Region</small>
+                    <h6 class="mb-0">{{ "%.4f"|format(heatmap_stats.center_region) }}</h6>
+                </div>
+                
+                <div class="stat-card">
+                    <small class="text-muted">Bottom Region</small>
+                    <h6 class="mb-0">{{ "%.4f"|format(heatmap_stats.bottom_region) }}</h6>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Model Info -->
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title"><i class="bi bi-cpu"></i> Model Info</h5>
+                <ul class="list-unstyled small">
+                    <li><strong>Architecture:</strong> EfficientNetB0</li>
+                    <li><strong>Input Size:</strong> 224x224</li>
+                    <li><strong>Classes:</strong> Fake / Real</li>
+                    <li><strong>Timestamp:</strong> {{ timestamp }}</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Technical Details (Collapsible) -->
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <button class="btn btn-link text-decoration-none" type="button" 
+                            data-bs-toggle="collapse" data-bs-target="#technicalDetails">
+                        <i class="bi bi-code-square"></i> Technical Details
+                        <i class="bi bi-chevron-down"></i>
+                    </button>
+                </h5>
+            </div>
+            <div id="technicalDetails" class="collapse">
+                <div class="card-body">
+                    <pre class="bg-light p-3 rounded"><code>{
+  "prediction": "{{ prediction }}",
+  "confidence": {{ confidence }},
+  "probabilities": {
+    "fake": {{ fake_prob }},
+    "real": {{ real_prob }}
+  },
+  "quality_metrics": {{ quality_metrics|tojson(indent=2) }},
+  "heatmap_statistics": {{ heatmap_stats|tojson(indent=2) }},
+  "artifacts_detected": {{ artifacts|tojson(indent=2) }}
+}</code></pre>
+                </div>
+            </div>
+        </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
