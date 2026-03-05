@@ -116,9 +116,6 @@ If you'd like to contribute:
 2. Create a branch for your feature/fix.
 3. Submit a pull request with tests or validation steps.
 
-## License & Credits
-
-- Add your preferred license here (e.g., MIT). If this is for private use, note that in the header.
 
 ## Contact
 
