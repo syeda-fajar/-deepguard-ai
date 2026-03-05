@@ -1,7 +1,4 @@
 # Deepfake Detector
-
-Comprehensive README for the Deepfake Detector project. This document explains the repository layout, installation, usage, model details, training, testing, and deployment instructions.
-
 ## Project Overview
 
 This project implements a deepfake detection pipeline with a simple web UI. It provides preprocessing utilities, model loading, evaluation, and a Flask-based app for uploading videos/images to detect deepfakes.
@@ -127,6 +124,4 @@ If you'd like to contribute:
 
 For questions or help, open an issue or contact the repository owner.
 
----
 
-If you'd like, I can update README contents with project-specific details (license text, author name, exact training command, or example screenshots). Tell me what to add or I can run quick checks to link specific lines in code.
